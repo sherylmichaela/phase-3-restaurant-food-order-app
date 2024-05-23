@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     delete_records()
 
-    # Create and register custom AustralianMobileProvider
+    # Create and register custom AustralianMobileProvider for seeding in mobile column
     class AustralianMobileProvider(BaseProvider):
             def mobile_number(self):
                 return "04" + str(self.random_number(digits=8)).zfill(8)
@@ -40,7 +40,17 @@ if __name__ == "__main__":
     print("Seeding successful for customers data")
 
     # Menu Items
+    item1 = MenuItem(item_name="Chicken Rice", price=14.90)
+    item2 = MenuItem(item_name="Laksa", price=13.90)
+    item3 = MenuItem(item_name="Char Kuay Teow", price=15.00)
+    item4 = MenuItem(item_name="Nasi Lemak", price=17.90)
+    item5 = MenuItem(item_name="Nasi Goreng", price=16.90)
+    item6 = MenuItem(item_name="Coke", price=3.00)
+    item7 = MenuItem(item_name="Coke Zero", price=3.00)
+    item8 = MenuItem(item_name="Sprite", price=3.00)
+    item9 = MenuItem(item_name="Fanta", price=3.00)
+    item10 = MenuItem(item_name="Mineral Water", price=1.50)
 
-
-
+    session.add_all( [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10] )
+    session.commit()
     # Orders
