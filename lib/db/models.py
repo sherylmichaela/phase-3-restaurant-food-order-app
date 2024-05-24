@@ -1,6 +1,5 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship, backref
 from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
-from datetime import datetime
 
 Base = declarative_base()
 
@@ -11,6 +10,8 @@ class Customer(Base):
     first_name = Column( String(), nullable=False )
     last_name = Column( String(), nullable=False )
     mobile = Column( String() )
+
+    orders = relationship( "Order", backref=backref("customer") )
 
     def __repr__(self):
         return (

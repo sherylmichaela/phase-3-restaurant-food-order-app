@@ -3,6 +3,8 @@ from faker.providers import BaseProvider
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Customer, MenuItem, Order
+from datetime import datetime
+import random
 
 if __name__ == "__main__":
     engine = create_engine("sqlite:///data.db")
@@ -14,8 +16,8 @@ if __name__ == "__main__":
 
     # Delete records from Customer, MenuItem and Order tables
     def delete_records():
-        session.query(Customer).delete()
-        session.query(MenuItem).delete()
+        # session.query(Customer).delete()
+        # session.query(MenuItem).delete()
         session.query(Order).delete()
 
     delete_records()
@@ -37,7 +39,6 @@ if __name__ == "__main__":
         session.add(customer)
         session.commit()
 
-    print("Seeding successful for customers data")
 
     # Menu Items
     item1 = MenuItem(item_name="Chicken Rice", price=14.90)
@@ -53,4 +54,28 @@ if __name__ == "__main__":
 
     session.add_all( [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10] )
     session.commit()
+
     # Orders
+    # for i in range(300):
+    #     # Define specific start and end dates
+    #     start_date = datetime(2024, 1, 1, 0, 0, 0)
+    #     end_date = datetime(2024, 5, 20, 23, 59, 59)
+
+    #     # Generate a random datetime within the specified range
+    #     random_datetime = fake.date_time_between(start_date=start_date, end_date=end_date)
+         
+    #     random_number_customer = random.randint(1, 100) # 100 customers in database
+    #     random_number_item = random.randint(1, 10) # 10 menu items
+    #     random_number_quantity = random.randint(1,10) # Maybe customer is buying in bulk
+
+    #     order = Order(
+    #           order_date_time=random_datetime,
+    #           customer_id=random_number_customer,
+    #           item_id=random_number_item,
+    #           quantity=random_number_quantity
+    #      )
+
+        # session.add(order)
+        # session.commit()
+
+    print("Seeding successful for customers data")
