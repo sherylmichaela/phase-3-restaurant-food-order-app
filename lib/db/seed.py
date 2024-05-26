@@ -2,7 +2,7 @@ from faker import Faker
 from faker.providers import BaseProvider
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Customer, MenuItem, Order
+from models import Base, Customer, MenuItem, Order, OrderDetail
 from datetime import datetime
 import random
 
@@ -16,9 +16,10 @@ if __name__ == "__main__":
 
     # Delete records from Customer, MenuItem and Order tables
     def delete_records():
-        # session.query(Customer).delete()
-        # session.query(MenuItem).delete()
+        session.query(Customer).delete()
+        session.query(MenuItem).delete()
         session.query(Order).delete()
+        session.query(OrderDetail).delete()
 
     delete_records()
 

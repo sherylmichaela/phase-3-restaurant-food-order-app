@@ -38,14 +38,25 @@ class Order(Base):
     id = Column( Integer(), primary_key=True )
     order_date_time = Column( DateTime, nullable=False) 
     customer_id = Column( Integer(), ForeignKey('customers.id') )
-    item_id = Column( String(), ForeignKey('menu_items.id') )
-    quantity = Column( Integer(), nullable=False )
 
     def __repr__(self):
         return (
             f"Order ID: {self.id}\n"
             f"Order Date/Time: {self.order_date_time}\n"
-            f"Customer: {self.customer_id}\n"
+            f"Customer: {self.customer.first_name}\n"
+        )
+    
+class OrderDetail(Base):
+    __tablename__ = "order_details"
+
+    id = Column( Integer(), primary_key=True )
+    order_id = Column( Integer(), ForeignKey("orders.id"), nullable=False )
+    menu_item_id = Column( String(), ForeignKey('menu_items.id'), nullable=False )
+    quantity = Column( Integer(), nullable=False )
+
+    def __repr__(self):
+        return (
+            f"Order ID: {self.order_id}\n"
             f"Item Ordered: {self.item_id}\n"
             f"Quantity: {self.quantity}"
         )
