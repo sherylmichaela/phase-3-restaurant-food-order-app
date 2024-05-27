@@ -61,16 +61,15 @@ class OrderDetail(Base):
 
     id = Column( Integer(), primary_key=True )
     order_id = Column( Integer(), ForeignKey("orders.id"), nullable=False )
-    menu_item_id = Column( String(), ForeignKey('menu_items.id'), nullable=False )
+    menu_item_id = Column( Integer(), ForeignKey('menu_items.id'), nullable=False )
     quantity = Column( Integer(), nullable=False )
 
-    # order = relationship("Order", back_populates="order_details")
     menu_item = relationship("MenuItem", back_populates="order_details")
     
 
     def __repr__(self):
         return (
-            f"Order ID: {self.order.id}\n"
+            f"Order ID: {self.order_id}\n"
             f"Item Ordered: {self.menu_item.item_name}\n"
             f"Quantity: {self.quantity}\n"
         )

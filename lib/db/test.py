@@ -13,21 +13,24 @@ if __name__ == "__main__":
     customer1 = session.query(Customer).filter(Customer.id == 1).first()
     customer2 = session.query(Customer).filter(Customer.id == 2).first()
 
-    order1 = Order(
-        order_date_time=fake.date_time(),
-        customer_id=customer1.id,
-    )
+    # Creating order with date, time and customer id
 
-    order2 = Order(
-        order_date_time=fake.date_time(),
-        customer_id=customer1.id,
-    )
+    # order1 = Order(
+    #     order_date_time=fake.date_time(),
+    #     customer_id=customer1.id,
+    # )
 
-    order3 = Order(
-        order_date_time=fake.date_time(),
-        customer_id=customer2.id,
-    )
+    # order2 = Order(
+    #     order_date_time=fake.date_time(),
+    #     customer_id=customer1.id,
+    # )
 
+    # order3 = Order(
+    #     order_date_time=fake.date_time(),
+    #     customer_id=customer2.id,
+    # )
+
+    # Creating orders with ordered items
 
     order_detail1 = OrderDetail(
         order_id=1,
@@ -52,7 +55,7 @@ if __name__ == "__main__":
     )
 
 
-    # session.add_all( [ order1, order2, order3, order_detail1, order_detail2, order_detail3, order_detail4 ] )
+    # session.add_all( [ order_detail1, order_detail2, order_detail3, order_detail4 ] )
     # session.commit()
 
     orders = session.query(Order).all()
@@ -63,7 +66,7 @@ if __name__ == "__main__":
     order = session.query(Order).filter(Order.id == 1).first()
     # print(order.customer)
     # print(order.menu_items)
-    # print(order.order_details)
+    print(order.order_details)
 
     # Prints out menu
     menu_items = session.query(MenuItem).all()
