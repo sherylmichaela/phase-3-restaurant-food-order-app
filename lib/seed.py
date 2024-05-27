@@ -6,21 +6,20 @@ from models import Base, Customer, MenuItem, Order, OrderDetail
 from datetime import datetime
 import random
 
+engine = create_engine("sqlite:///data.db")
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+fake = Faker()
+
+# Delete records from Customer, MenuItem and Order tables
+def delete_records():
+    session.query(Customer).delete()
+    session.query(MenuItem).delete()
+    session.query(Order).delete()
+    session.query(OrderDetail).delete()
+
 if __name__ == "__main__":
-    engine = create_engine("sqlite:///data.db")
-    Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    fake = Faker()
-
-    # Delete records from Customer, MenuItem and Order tables
-    def delete_records():
-        session.query(Customer).delete()
-        session.query(MenuItem).delete()
-        session.query(Order).delete()
-        session.query(OrderDetail).delete()
-
     delete_records()
 
     # Create and register custom AustralianMobileProvider for seeding in mobile column
@@ -37,8 +36,8 @@ if __name__ == "__main__":
             last_name=fake.last_name(),
             mobile=fake.mobile_number()
             )
-        session.add(customer)
-        session.commit()
+        # session.add(customer)
+        # session.commit()
 
 
     # Menu Items
@@ -70,8 +69,8 @@ if __name__ == "__main__":
               customer_id=random_number_customer
          )
 
-        session.add(order)
-        session.commit()
+        # session.add(order)
+        # session.commit()
 
     # Order Details
     unique_order_details = set()
@@ -93,7 +92,7 @@ if __name__ == "__main__":
                 quantity= random_quantity,
             )
 
-            session.add(order_detail)
-            session.commit()
+            # session.add(order_detail)
+            # session.commit()
     
     print("Seeding successful for customers data")
