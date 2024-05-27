@@ -60,8 +60,26 @@ if __name__ == "__main__":
     # for order in orders:
     #     print(order)
 
-    order = session.query(Order).filter(Order.id == 3).first()
-    print(order.customer)
+    order = session.query(Order).filter(Order.id == 1).first()
+    # print(order.customer)
+    # print(order.menu_items)
+    # print(order.order_details)
+
+    # Prints out menu
+    menu_items = session.query(MenuItem).all()
+    # for item in menu_items:
+    #     print(item)
+
+    # Retrieve the orders made by this customer
+    customer_orders = session.query(Order).filter(Order.customer_id == customer1.id).all()
+    # for order in customer_orders:
+    #     print(order.customer)
+
+    # Retrieve the items from an order
+    customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == order_detail1.order_id).all()
+    # for order in customer_order_breakdown:
+    #     print(order.menu_item.item_name)
+
 
     # print(f"{customer1.first_name}")
     # print(customer1.orders)
