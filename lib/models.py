@@ -47,7 +47,7 @@ class Order(Base):
     # 1-M relationship between Order and OrderDetail
     order_details = relationship( "OrderDetail", backref=backref("order"))
 
-    menu_items = association_proxy("order_details","menu_item")
+    menu_items = association_proxy("order_details","menu_item", creator=lambda m: OrderDetail(menu_item=m))
 
     def __repr__(self):
         return (
@@ -71,5 +71,5 @@ class OrderDetail(Base):
         return (
             f"Order ID: {self.order_id}\n"
             f"Item Ordered: {self.menu_item.item_name}\n"
-            f"Quantity: {self.quantity}\n"
+            f"Quantity: {self.quantity}"
         )

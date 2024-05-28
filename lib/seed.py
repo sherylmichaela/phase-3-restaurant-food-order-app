@@ -36,8 +36,8 @@ if __name__ == "__main__":
             last_name=fake.last_name(),
             mobile=fake.mobile_number()
             )
-        # session.add(customer)
-        # session.commit()
+        session.add(customer)
+        session.commit()
 
 
     # Menu Items
@@ -69,8 +69,8 @@ if __name__ == "__main__":
               customer_id=random_number_customer
          )
 
-        # session.add(order)
-        # session.commit()
+        session.add(order)
+        session.commit()
 
     # Order Details
     unique_order_details = set()
@@ -92,7 +92,7 @@ if __name__ == "__main__":
                 quantity= random_quantity,
             )
 
-            # session.add(order_detail)
-            # session.commit()
+            session.add(order_detail)
+            session.commit()
     
     print("Seeding successful for customers data")

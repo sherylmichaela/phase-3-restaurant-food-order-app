@@ -67,6 +67,7 @@ if __name__ == "__main__":
     # print(order.customer)
     # print(order.menu_items)
     print(order.order_details)
+    print(order.customer.first_name)
 
     # Prints out menu
     menu_items = session.query(MenuItem).all()
