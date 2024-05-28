@@ -1,5 +1,6 @@
 from config import session
 from models import Customer, MenuItem, Order, OrderDetail
+from datetime import datetime
 from colorama import Back, Fore, Style
 import os
 
@@ -14,15 +15,18 @@ def header(title, symbol, repetition): # Header template
     print(title)
     print(symbol * repetition)
 
-def place_new_order():
-    clear()
+############################################################################################################### 
+def check_customer():
 
     print("\nPls enter your first name.")
-    first_name = input()
+    first_name = input() 
+    # first_name = "Sheryl"
     print("\nPls enter your last name/initial.")
     last_name = input()
+    # last_name = "Chee"
     print("\nPlease enter your mobile number.")
     mobile = input()
+    # mobile = "0413689413"
 
     # Checks for existing customer. Adds customer if new.
 
@@ -32,14 +36,33 @@ def place_new_order():
         new_customer = Customer(first_name=first_name, last_name=last_name, mobile=mobile)
         session.add(new_customer)
         session.commit()
+
+        newly_added_customer = session.query(Customer).filter_by(first_name=first_name, last_name=last_name, mobile=mobile).first()
+        add_order_id = Order(
+            order_date_time = datetime.now(),
+            customer_id = newly_added_customer.id
+        )
+
+        session.add(add_order_id)
+        session.commit()
+
         clear()
-        print(f"Welcome to Sheryl's Diner, {first_name}. What would you like to order today?\n")
+        print(Back.LIGHTYELLOW_EX + f"Welcome to Sheryl's Diner, {first_name}.\n" + Style.RESET_ALL)
     else:
+        add_order_id = Order(
+            order_date_time = datetime.now(),
+            customer_id = existing_customer.id
+        )
+
+        session.add(add_order_id)
+        session.commit()
+
         clear()
-        print(f"Welcome back {first_name}! What would you like to order today?\n")
+        print(Back.LIGHTGREEN_EX + f"Welcome back {first_name}!\n" + Style.RESET_ALL)
 
-
-    # Proceeds to place order
+def order_entry():
+    
+    # Queries menu items and print them
 
     def get_menu():
         menu_items = session.query(MenuItem).all()
@@ -50,16 +73,63 @@ def place_new_order():
     header("MENU", "*", 30)
     get_menu()
     print("*" * 30)
+    print("\nWhat would you like to order today? Please type in numerical value of the food/drink item.")
 
-    food_item = input()
-    print("\nQuantity? (Pls input only numbers.)")
+    # Placing order
 
+    order_loop = True
+
+    while order_loop:
+
+        food_item = input()
+        valid_food_items = {str(i) for i in range(1, 11)}
+
+        if food_item in valid_food_items:
+            pass
+        else:
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+        quantity_loop = True
+
+        while quantity_loop:
+            print("\nQuantity? (Pls input only numbers.)")
+            quantity = input()
+
+            valid_quantity = {str(i) for i in range(1,100)}
+
+            if quantity in valid_quantity:
+                quantity_loop = False
+                order_loop = False
+                break
+            else:
+                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+
+def order_entry_flow():
     
+    order_entry()
 
-    quantity = int( input() )
+    while True:
+        print("\nItem added to order! Pls select an option below:")
+        print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tPlace more orders")
+        print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView/Modify order & Checkout")
+        print("=" * 70)
+        choice = input()
 
-   
-        
+        if choice == "1":
+            clear()
+            order_entry()
+        elif choice == "2":
+            break
+        else:
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+
+def place_new_order():
+    clear()
+    check_customer()
+    order_entry_flow()
+    
 ############################################################################################################### 
 
 def greet():
