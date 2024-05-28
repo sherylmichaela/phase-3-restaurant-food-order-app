@@ -19,14 +19,14 @@ def header(title, symbol, repetition): # Header template
 def check_customer():
 
     print("\nPls enter your first name.")
-    first_name = input() 
-    # first_name = "Sheryl"
+    # first_name = input() 
+    first_name = "Sheryl"
     print("\nPls enter your last name/initial.")
-    last_name = input()
-    # last_name = "Chee"
+    # last_name = input()
+    last_name = "Chee"
     print("\nPlease enter your mobile number.")
-    mobile = input()
-    # mobile = "0413689413"
+    # mobile = input()
+    mobile = "0413689413"
 
     # Checks for existing customer. Adds customer if new.
 
@@ -73,37 +73,50 @@ def order_entry():
     header("MENU", "*", 30)
     get_menu()
     print("*" * 30)
-    print("\nWhat would you like to order today? Please type in numerical value of the food/drink item.")
+    print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.")
 
     # Placing order
 
-    order_loop = True
+    loop = True
 
-    while order_loop:
+    while loop:
 
-        food_item = input()
-        valid_food_items = {str(i) for i in range(1, 11)}
+        food_loop = True
 
-        if food_item in valid_food_items:
-            pass
-        else:
-            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+        while food_loop:
+            valid_food_items = {str(i) for i in range(1, 11)}
+            food_item = input()
+            
+            if food_item in valid_food_items:
+                food_loop = False
+            else:
+                print(Fore.RED + "Invalid input! Please enter a number between 1 and 10." + Style.RESET_ALL)
+                
 
         quantity_loop = True
 
         while quantity_loop:
             print("\nQuantity? (Pls input only numbers.)")
-            quantity = input()
 
             valid_quantity = {str(i) for i in range(1,100)}
+            quantity = input()
 
             if quantity in valid_quantity:
                 quantity_loop = False
-                order_loop = False
-                break
+                loop = False
             else:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
+            last_order = session.query(Order).order_by(Order.id.desc()).first()
+
+            add_order_entry = OrderDetail(
+                order_id = last_order.id,
+                menu_item_id = int(food_item),
+                quantity = int(quantity)
+            )
+
+            session.add(add_order_entry)
+            session.commit()
 
 def order_entry_flow():
     

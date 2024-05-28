@@ -66,13 +66,13 @@ if __name__ == "__main__":
     order = session.query(Order).filter(Order.id == 1).first()
     # print(order.customer)
     # print(order.menu_items)
-    print(order.order_details)
-    print(order.customer.first_name)
+    # print(order.order_details)
+    # print(order.customer.first_name)
 
     # Prints out menu
     menu_items = session.query(MenuItem).all()
-    for item in menu_items:
-        print(item)
+    # for item in menu_items:
+    #     print(item)
 
     # Retrieve the orders made by this customer
     customer_orders = session.query(Order).filter(Order.customer_id == customer1.id).all()
@@ -90,3 +90,9 @@ if __name__ == "__main__":
 
     # print(f"{customer2.first_name}")
     # print(customer2.orders)
+
+    last_order = session.query(Order).order_by(Order.id.desc()).first()
+    # print(last_order.id)
+
+    valid_food_items = {str(i) for i in range(1, 11)}
+    print(valid_food_items)
