@@ -34,7 +34,7 @@ class MenuItem(Base):
     orders = association_proxy("order_details", "order")
 
     def __repr__(self):
-        return f"{self.id}: {self.item_name} - ${self.price}\n"
+        return f"{self.id}: {self.item_name:<20} - ${self.price}"
 
 
 class Order(Base):

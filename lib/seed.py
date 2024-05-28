@@ -50,7 +50,7 @@ if __name__ == "__main__":
     item7 = MenuItem(item_name="Coke Zero", price=3.00)
     item8 = MenuItem(item_name="Sprite", price=3.00)
     item9 = MenuItem(item_name="Fanta", price=3.00)
-    item10 = MenuItem(item_name="Mineral Water", price=1.50)
+    item10 = MenuItem(item_name="Bottled Water", price=1.50)
 
     session.add_all( [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10] )
     session.commit()

@@ -1,13 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Customer, MenuItem, Order, OrderDetail
-from faker import Faker
+# from faker import Faker
 
 engine = create_engine("sqlite:///data.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 
-fake = Faker()
+# fake = Faker()
 
 if __name__ == "__main__":
     customer1 = session.query(Customer).filter(Customer.id == 1).first()
@@ -71,8 +71,8 @@ if __name__ == "__main__":
 
     # Prints out menu
     menu_items = session.query(MenuItem).all()
-    # for item in menu_items:
-    #     print(item)
+    for item in menu_items:
+        print(item)
 
     # Retrieve the orders made by this customer
     customer_orders = session.query(Order).filter(Order.customer_id == customer1.id).all()
