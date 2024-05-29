@@ -15,7 +15,8 @@ def header(title, symbol, repetition): # Header template
     print(title)
     print(symbol * repetition)
 
-############################################################################################################### 
+###############################################################################################################
+
 def check_customer():
 
     print("\nPls enter your first name.")
@@ -61,7 +62,6 @@ def check_customer():
         print(Back.LIGHTGREEN_EX + f"Welcome back {first_name}!\n" + Style.RESET_ALL)
 
 def order_entry():
-    
     # Queries menu items and print them
 
     def get_menu():
@@ -70,9 +70,9 @@ def order_entry():
         for item in menu_items:
             print(item)
 
-    header("MENU", "*", 30)
+    header("MENU", "*", 31)
     get_menu()
-    print("*" * 30)
+    print("*" * 31)
     print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.")
 
     # Placing order
@@ -96,27 +96,28 @@ def order_entry():
         quantity_loop = True
 
         while quantity_loop:
-            print("\nQuantity? (Pls input only numbers.)")
+            print("Quantity? (Pls input only numbers.)")
 
-            valid_quantity = {str(i) for i in range(1,100)}
+            valid_quantity = {str(i) for i in range(1, 100)}
             quantity = input()
 
             if quantity in valid_quantity:
                 quantity_loop = False
-                loop = False
             else:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
-            last_order = session.query(Order).order_by(Order.id.desc()).first()
+        loop = False
 
-            add_order_entry = OrderDetail(
-                order_id = last_order.id,
-                menu_item_id = int(food_item),
-                quantity = int(quantity)
-            )
+        last_order = session.query(Order).order_by(Order.id.desc()).first()
 
-            session.add(add_order_entry)
-            session.commit()
+        add_order_entry = OrderDetail(
+            order_id = last_order.id,
+            menu_item_id = int(food_item),
+            quantity = int(quantity)
+        )
+
+        session.add(add_order_entry)
+        session.commit()
 
 def order_entry_flow():
     
@@ -137,13 +138,12 @@ def order_entry_flow():
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
-
 def place_new_order():
     clear()
     check_customer()
     order_entry_flow()
     
-############################################################################################################### 
+###############################################################################################################
 
 def greet():
     clear()
