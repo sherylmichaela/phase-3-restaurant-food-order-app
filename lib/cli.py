@@ -17,17 +17,34 @@ def header(title, symbol, repetition): # Header template
 
 ###############################################################################################################
 
+def view_orders_main_menu():
+
+    print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+    mobile = input()
+    # mobile = "0413689413"
+
+    customer_found = session.query(Customer).filter(Customer.mobile == mobile).first()
+    order_found = session.query(Order).filter()
+
+    if customer_found:
+        print(f"\n{customer_found}")
+    else:
+        print(f"Oops, no orders found.\n")
+
+
+###############################################################################################################
+
 def check_customer():
 
     print("\nPls enter your first name.")
-    # first_name = input() 
-    first_name = "Sheryl"
+    first_name = input() 
+    # first_name = "Sheryl"
     print("\nPls enter your last name/initial.")
-    # last_name = input()
-    last_name = "Chee"
-    print("\nPlease enter your mobile number.")
-    # mobile = input()
-    mobile = "0413689413"
+    last_name = input()
+    # last_name = "Chee"
+    print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+    mobile = input()
+    # mobile = "0413689413"
 
     # Checks for existing customer. Adds customer if new.
 
@@ -147,13 +164,14 @@ def place_new_order():
 
 def greet():
     clear()
-    header("Welcome to Sheryl's Makan Place! Pls select an option to get started:", "*", 70)
+    header("Welcome to Sheryl's Makan Place!", "*", 32)
 
 def main_menu():
+    print("\nPls select an option below:\n")
     print(Back.LIGHTGREEN_EX + " 1 " + Style.RESET_ALL + "\tPlace a new order")
     print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView past orders")
-    print(Back.LIGHTRED_EX + " 0 " + Style.RESET_ALL + "\tExit this program")
-    print("=" * 70)
+    print(Back.LIGHTRED_EX + " 0 " + Style.RESET_ALL + "\tExit this program\n")
+    print("=" * 32)
 
 def start():
     start_loop = True
@@ -170,7 +188,8 @@ def start():
                 option_loop = False
                 place_new_order()
             elif choice == "2":
-                # option_loop = False
+                option_loop = False
+                view_orders_main_menu()
                 pass
             elif choice == "0":
                 option_loop = False
@@ -178,7 +197,7 @@ def start():
             else:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
-    print(Back.BLUE + "Thank you for choosing Sheryl's Diner. See you soon!" + Style.RESET_ALL)
+    print(Back.BLUE + "Thank you for choosing Sheryl's Makan Place. See you soon!" + Style.RESET_ALL)
 
 if __name__ == "__main__":
     greet()

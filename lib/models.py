@@ -30,8 +30,9 @@ class MenuItem(Base):
     item_name = Column( String(), nullable=False )
     price = Column( DECIMAL(4,2), nullable=False )
 
+    # M-M relationship between Menu Item and Order Detail
     order_details = relationship("OrderDetail", back_populates="menu_item")
-    orders = association_proxy("order_details", "order")
+    orders = association_proxy("order_details", "order", creator=lambda o: OrderDetail(order=o))
 
     def __repr__(self):
         return f"{self.id:2d}: {self.item_name:<20} ${self.price}"
@@ -47,6 +48,7 @@ class Order(Base):
     # 1-M relationship between Order and OrderDetail
     order_details = relationship( "OrderDetail", backref=backref("order"))
 
+    # To get menu items directly from an order
     menu_items = association_proxy("order_details","menu_item", creator=lambda m: OrderDetail(menu_item=m))
 
     def __repr__(self):
@@ -64,6 +66,7 @@ class OrderDetail(Base):
     menu_item_id = Column( Integer(), ForeignKey('menu_items.id'), nullable=False )
     quantity = Column( Integer(), nullable=False )
 
+    # M-M relationship between Menu Item and Order Detail
     menu_item = relationship("MenuItem", back_populates="order_details")
     
 
@@ -71,5 +74,5 @@ class OrderDetail(Base):
         return (
             f"Order ID: {self.order_id}\n"
             f"Item Ordered: {self.menu_item.item_name}\n"
-            f"Quantity: {self.quantity}"
+            f"Quantity: {self.quantity}\n"
         )

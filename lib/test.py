@@ -32,67 +32,98 @@ if __name__ == "__main__":
 
     # Creating orders with ordered items
 
-    order_detail1 = OrderDetail(
-        order_id=1,
-        menu_item_id=2,
-        quantity=4
-    )
+    # order_detail1 = OrderDetail(
+    #     order_id=1,
+    #     menu_item_id=2,
+    #     quantity=4
+    # )
 
-    order_detail2 = OrderDetail(
-        order_id=1,
-        menu_item_id=3,
-        quantity=1
-    )
-    order_detail3 = OrderDetail(
-        order_id=2,
-        menu_item_id=6,
-        quantity=2
-    )
-    order_detail4 = OrderDetail(
-        order_id=3,
-        menu_item_id=8,
-        quantity=4
-    )
+    # order_detail2 = OrderDetail(
+    #     order_id=1,
+    #     menu_item_id=3,
+    #     quantity=1
+    # )
+    # order_detail3 = OrderDetail(
+    #     order_id=2,
+    #     menu_item_id=6,
+    #     quantity=2
+    # )
+    # order_detail4 = OrderDetail(
+    #     order_id=3,
+    #     menu_item_id=8,
+    #     quantity=4
+    # )
 
 
     # session.add_all( [ order_detail1, order_detail2, order_detail3, order_detail4 ] )
     # session.commit()
 
-    orders = session.query(Order).all()
+    ###############################################################################################################
 
-    # for order in orders:
-    #     print(order)
+    # FOR TESTING PURPOSES
 
-    order = session.query(Order).filter(Order.id == 1).first()
-    # print(order.customer)
-    # print(order.menu_items)
-    # print(order.order_details)
-    # print(order.customer.first_name)
+    # To get all customers
+    customers = session.query(Customer).all()
+    # for customer in customers:
+    #     print(customer)
 
-    # Prints out menu
+    # To get all menu items
     menu_items = session.query(MenuItem).all()
     # for item in menu_items:
     #     print(item)
 
-    # Retrieve the orders made by this customer
-    customer_orders = session.query(Order).filter(Order.customer_id == customer1.id).all()
-    # for order in customer_orders:
-    #     print(order.customer)
+    # To get all orders
+    orders = session.query(Order).all()
+    # for order in orders:
+    #     print(order)
 
-    # Retrieve the items from an order
-    customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == order_detail1.order_id).all()
+    # To get all order details
+    order_details = session.query(OrderDetail).all()
+    # for detail in order_details:
+    #     print(detail)
+
+    ####################################################################
+
+    # TO GET ALL INFO ABOUT AN ORDER
+    order = session.query(Order).filter(Order.id == 1).first()
+
+    # print(order)
+    # print(order.customer.first_name)
+    # print(order.customer.mobile)
+    # print(order.menu_items)
+    # print(order.order_details)
+
+    ####################################################################
+    
+    # TO RETRIEVE ALL ORDERS MADE BY A CUSTOMER
+
+    customer = session.query(Customer).filter(Customer.id == 2).first()
+    # for order in customer.orders:
+    #     print(order)
+
+    ####################################################################
+
+    # RETRIEVE ITEMS FROM AN ORDER
+    # customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == order_detail1.order_id).all()
+    customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == 10).all()
     # for order in customer_order_breakdown:
-    #     print(order.menu_item.item_name)
+    #     print(f"{order.menu_item.item_name:<20} \t${str(order.menu_item.price):<7} \t{order.quantity}")
 
+    ####################################################################
 
-    # print(f"{customer1.first_name}")
-    # print(customer1.orders)
-
-    # print(f"{customer2.first_name}")
-    # print(customer2.orders)
-
+    # TO GET LAST ORDER PLACED FROM ORDERS TABLE
     last_order = session.query(Order).order_by(Order.id.desc()).first()
     # print(last_order.id)
 
+    ####################################################################
+
+    # TO RETRIEVE ALL ORDERS MADE BY A CUSTOMER USING MOBILE NUMBER
+    customer_via_mobile = session.query(Customer).filter(Customer.mobile == "0413689413").first()
+    # print(customer_via_mobile)
+    # for order in customer_via_mobile.orders:
+    #     print(order)
+   
+    ####################################################################
+
     valid_food_items = {str(i) for i in range(1, 11)}
-    print(valid_food_items)
+    # print(valid_food_items)
