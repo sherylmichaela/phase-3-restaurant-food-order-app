@@ -10,12 +10,23 @@ def clear(): # For clearing terminal
     else:
         os.system("cls")
 
+def greet():
+    clear()
+    header("Welcome to Sheryl's Makan Place!", "*", 32)
+
 def header(title, symbol, repetition): # Header template
     print(symbol * repetition)
     print(title)
     print(symbol * repetition)
 
 ###############################################################################################################
+
+def main_menu():
+    print("\nPls select an option below:\n")
+    print(Back.LIGHTGREEN_EX + " 1 " + Style.RESET_ALL + "\tPlace a new order")
+    print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView past orders")
+    print(Back.LIGHTRED_EX + " 0 " + Style.RESET_ALL + "\tExit this program\n")
+    print("=" * 32)
 
 def view_orders_main_menu():
 
@@ -87,7 +98,7 @@ def order_entry():
         for item in menu_items:
             print(item)
 
-    header("MENU", "*", 31)
+    header(f"MENU", "*", 31)
     get_menu()
     print("*" * 31)
     print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.")
@@ -154,51 +165,43 @@ def order_entry_flow():
             break
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
-
-def place_new_order():
-    clear()
-    check_customer()
-    order_entry_flow()
     
 ###############################################################################################################
 
-def greet():
-    clear()
-    header("Welcome to Sheryl's Makan Place!", "*", 32)
+def place_a_new_order():
+    check_customer()
+    order_entry_flow()
 
-def main_menu():
-    print("\nPls select an option below:\n")
-    print(Back.LIGHTGREEN_EX + " 1 " + Style.RESET_ALL + "\tPlace a new order")
-    print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView past orders")
-    print(Back.LIGHTRED_EX + " 0 " + Style.RESET_ALL + "\tExit this program\n")
-    print("=" * 32)
+###############################################################################################################
 
 def start():
+    greet()
     start_loop = True
 
     while start_loop:
         main_menu()
 
-        option_loop = True
-
-        while option_loop:
+        while True:
             choice = input()
 
-            if choice == "1":
-                option_loop = False
-                place_new_order()
-            elif choice == "2":
-                option_loop = False
+            if choice == "1": # Place a new order
+                clear()
+                place_a_new_order()
+                break
+            elif choice == "2": # View past orders
+                clear()
                 view_orders_main_menu()
-                pass
-            elif choice == "0":
-                option_loop = False
+                break
+            elif choice == "0": # Exit this program
+                clear()
                 start_loop = False
+                break
             else:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
     print(Back.BLUE + "Thank you for choosing Sheryl's Makan Place. See you soon!" + Style.RESET_ALL)
 
+###############################################################################################################
+
 if __name__ == "__main__":
-    greet()
     start()

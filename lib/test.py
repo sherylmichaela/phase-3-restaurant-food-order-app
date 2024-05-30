@@ -103,11 +103,18 @@ if __name__ == "__main__":
 
     ####################################################################
 
-    # RETRIEVE ITEMS FROM AN ORDER
+    # RETRIEVE ITEMS FROM AN ORDER & ADD UP TOTAL
     # customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == order_detail1.order_id).all()
     customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == 10).all()
-    # for order in customer_order_breakdown:
-    #     print(f"{order.menu_item.item_name:<20} \t${str(order.menu_item.price):<7} \t{order.quantity}")
+
+    total_price = 0
+
+    for order in customer_order_breakdown:
+        item_total = order.menu_item.price * order.quantity
+        total_price += item_total
+
+        print(f"{order.menu_item.item_name:<20} \t${str(order.menu_item.price):<7} \t{order.quantity} \t${str(order.menu_item.price * order.quantity)}")
+    print(f"Total: {str(total_price)}")
 
     ####################################################################
 
