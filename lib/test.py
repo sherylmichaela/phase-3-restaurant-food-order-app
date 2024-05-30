@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Customer, MenuItem, Order, OrderDetail
 # from faker import Faker
 
-engine = create_engine("sqlite:///data.db")
+engine = create_engine("sqlite:///lib/data.db")
 Session = sessionmaker(bind=engine)
 session = Session()
 

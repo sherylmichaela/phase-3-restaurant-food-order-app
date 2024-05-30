@@ -19,133 +19,73 @@ def header(title, symbol, repetition): # Header template
     print(title)
     print(symbol * repetition)
 
-###############################################################################################################
-
 def main_menu():
+    greet()
     print("\nPls select an option below:\n")
     print(Back.LIGHTGREEN_EX + " 1 " + Style.RESET_ALL + "\tPlace a new order")
     print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView past orders")
     print(Back.LIGHTRED_EX + " 0 " + Style.RESET_ALL + "\tExit this program\n")
     print("=" * 32)
 
-def view_orders_main_menu():
-
-    print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-    mobile = input()
-    # mobile = "0413689413"
-
-    customer_found = session.query(Customer).filter(Customer.mobile == mobile).first()
-    order_found = session.query(Order).filter()
-
-    if customer_found:
-        print(f"\n{customer_found}")
-    else:
-        print(f"Oops, no orders found.\n")
-
-
 ###############################################################################################################
 
 def check_customer():
 
-    print("\nPls enter your first name.")
-    first_name = input() 
-    # first_name = "Sheryl"
-    print("\nPls enter your last name/initial.")
-    last_name = input()
-    # last_name = "Chee"
-    print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-    mobile = input()
-    # mobile = "0413689413"
-
-    # Checks for existing customer. Adds customer if new.
-
-    existing_customer = session.query(Customer).filter_by(first_name=first_name, last_name=last_name, mobile=mobile).first()
-
-    if not existing_customer:
-        new_customer = Customer(first_name=first_name, last_name=last_name, mobile=mobile)
-        session.add(new_customer)
-        session.commit()
-
-        newly_added_customer = session.query(Customer).filter_by(first_name=first_name, last_name=last_name, mobile=mobile).first()
-        add_order_id = Order(
-            order_date_time = datetime.now(),
-            customer_id = newly_added_customer.id
-        )
-
-        session.add(add_order_id)
-        session.commit()
-
-        clear()
-        print(Back.LIGHTYELLOW_EX + f"Welcome to Sheryl's Diner, {first_name}.\n" + Style.RESET_ALL)
-    else:
-        add_order_id = Order(
-            order_date_time = datetime.now(),
-            customer_id = existing_customer.id
-        )
-
-        session.add(add_order_id)
-        session.commit()
-
-        clear()
-        print(Back.LIGHTGREEN_EX + f"Welcome back {first_name}!\n" + Style.RESET_ALL)
-
-def order_entry():
-    # Queries menu items and print them
-
-    def get_menu():
-        menu_items = session.query(MenuItem).all()
-
-        for item in menu_items:
-            print(item)
-
-    header(f"MENU", "*", 31)
-    get_menu()
-    print("*" * 31)
-    print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.")
-
-    # Placing order
-
     loop = True
 
     while loop:
+        print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+        mobile = input().strip()
+        # mobile = "0413689413"
 
-        food_loop = True
+        if len(mobile) == 10 and mobile.isdigit():
 
-        while food_loop:
-            valid_food_items = {str(i) for i in range(1, 11)}
-            food_item = input()
-            
-            if food_item in valid_food_items:
-                food_loop = False
-            else:
-                print(Fore.RED + "Invalid input! Please enter a number between 1 and 10." + Style.RESET_ALL)
+            existing_customer = session.query(Customer).filter(Customer.mobile == mobile).first()
+
+            if not existing_customer:
                 
+                print("\nPls enter your first name.")
+                first_name = input() 
+                # first_name = "Sheryl"
+                print("\nPls enter your last name/initial.")
+                last_name = input()
+                # last_name = "Chee"
 
-        quantity_loop = True
+                new_customer = Customer(first_name=first_name, last_name=last_name, mobile=mobile)
+                session.add(new_customer)
+                session.commit()
 
-        while quantity_loop:
-            print("Quantity? (Pls input only numbers.)")
+                newly_added_customer = session.query(Customer).filter_by(first_name=first_name, last_name=last_name, mobile=mobile).first()
+                
+                add_order_id = Order(
+                order_date_time = datetime.now(),
+                customer_id = newly_added_customer.id
+                )
 
-            valid_quantity = {str(i) for i in range(1, 100)}
-            quantity = input()
+                session.add(add_order_id)
+                session.commit()
 
-            if quantity in valid_quantity:
-                quantity_loop = False
+                loop = False
+
+                clear()
+                print(Back.LIGHTYELLOW_EX + f"Welcome to Sheryl's Makan Place, {first_name}.\n" + Style.RESET_ALL)
+
             else:
-                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                add_order_id = Order(
+                    order_date_time = datetime.now(),
+                    customer_id = existing_customer.id
+                )
 
-        loop = False
+                session.add(add_order_id)
+                session.commit()
 
-        last_order = session.query(Order).order_by(Order.id.desc()).first()
-
-        add_order_entry = OrderDetail(
-            order_id = last_order.id,
-            menu_item_id = int(food_item),
-            quantity = int(quantity)
-        )
-
-        session.add(add_order_entry)
-        session.commit()
+                loop = False
+                
+                clear()
+                print(Back.LIGHTGREEN_EX + f"Welcome back {existing_customer.first_name}!\n" + Style.RESET_ALL)
+        
+        else:
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
 def order_entry_flow():
     
@@ -165,17 +105,92 @@ def order_entry_flow():
             break
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+def order_entry():
+
+    def get_menu():
+        menu_items = session.query(MenuItem).all()
+        for item in menu_items:
+            print(item)
+
+    header(f"MENU", "*", 31)
+    get_menu()
+    print("*" * 31)
+    print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.\nTo go back to the main menu, type 'back'.")
+    
+    choice = input()
+
+    if choice.lower() != "back":
+        loop = True
+
+        while loop:
+
+            food_loop = True
+
+            while food_loop:
+                valid_food_items = {str(i) for i in range(1, 11)}
+                food_item = input()
+                
+                if food_item in valid_food_items:
+                    food_loop = False
+                else:
+                    print(Fore.RED + "Invalid input! Please enter a number between 1 and 10." + Style.RESET_ALL)
+                    
+
+            quantity_loop = True
+
+            while quantity_loop:
+                print("Quantity? (Pls input only numbers.)")
+
+                valid_quantity = {str(i) for i in range(1, 100)}
+                quantity = input()
+
+                if quantity in valid_quantity:
+                    quantity_loop = False
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+            loop = False
+
+            last_order = session.query(Order).order_by(Order.id.desc()).first()
+
+            add_order_entry = OrderDetail(
+                order_id = last_order.id,
+                menu_item_id = int(food_item),
+                quantity = int(quantity)
+            )
+
+            session.add(add_order_entry)
+            session.commit()
+    else:
+        clear()
+        loop = False
+        print()
     
 ###############################################################################################################
+# MAIN CODES HERE
 
 def place_a_new_order():
     check_customer()
-    order_entry_flow()
+    order_entry()
+
+def view_past_orders():
+
+    print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+    mobile = input()
+    # mobile = "0413689413"
+
+    customer_found = session.query(Customer).filter(Customer.mobile == mobile).first()
+    order_found = session.query(Order).filter()
+
+    if customer_found:
+        print(f"\n{customer_found}")
+    else:
+        print(f"Oops, no orders found.\n")
 
 ###############################################################################################################
 
 def start():
-    greet()
     start_loop = True
 
     while start_loop:
@@ -190,7 +205,7 @@ def start():
                 break
             elif choice == "2": # View past orders
                 clear()
-                view_orders_main_menu()
+                view_past_orders()
                 break
             elif choice == "0": # Exit this program
                 clear()
@@ -200,8 +215,6 @@ def start():
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
     print(Back.BLUE + "Thank you for choosing Sheryl's Makan Place. See you soon!" + Style.RESET_ALL)
-
-###############################################################################################################
 
 if __name__ == "__main__":
     start()

@@ -6,7 +6,7 @@ from models import Base, Customer, MenuItem, Order, OrderDetail
 from datetime import datetime
 import random
 
-engine = create_engine("sqlite:///data.db")
+engine = create_engine("sqlite:///lib/data.db")
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
