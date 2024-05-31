@@ -2,6 +2,7 @@ from config import session
 from models import Customer, MenuItem, Order, OrderDetail
 from datetime import datetime
 from colorama import Back, Fore, Style
+from tabulate import tabulate
 import os
 
 logged_customer = None
@@ -29,6 +30,53 @@ def main_menu():
     print(Back.LIGHTRED_EX + " 0 " + Style.RESET_ALL + "\tExit this program\n")
     print("=" * 32)
 
+def get_menu():
+    menu_items = session.query(MenuItem).all()
+    for item in menu_items:
+        print(item)
+
+def view_current_order():
+    current_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id).all()
+
+    total_price = 0
+    table = []
+
+    for item in current_order_breakdown:
+        item_total = item.menu_item.price * item.quantity
+        total_price += item_total
+        table.append([item.menu_item.item_name, f"${item.menu_item.price}", item.quantity, f"${item_total}"])
+
+    print("Order Summary")
+    headers = ["Item Ordered", "Unit Price", "Quantity", "Item Total"]
+    table.append(["", "", "Total", f"${total_price}"])
+    print(tabulate(table, headers, tablefmt="grid"))
+
+    print("\nPls select an option below:")
+    print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tAdd items")
+    print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tCancel order")
+    print("=" * 70)
+
+    while True:
+        choice = input()
+
+        if choice == "1":
+            clear()
+            header("MENU", "*", 31)
+            get_menu()
+            print("*" * 31)
+            print(f"\nPlease type in the numerical value of the food/drink item.\nOtherwise, type 'view' to view your order.")
+            break
+        elif choice == "2":
+            last_order = session.query(Order).order_by(Order.id.desc()).first()
+            session.query(Order).filter(Order.id == last_order.id).delete()
+            session.query(OrderDetail).filter(OrderDetail.order_id == last_order.id).delete()
+            session.commit()
+            clear()
+            print("Order cancelled!")
+            break
+        else:
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
 ###############################################################################################################
 
 check_customer_runs_once = False
@@ -42,8 +90,8 @@ def check_customer():
         while loop:
 
             print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-            mobile = input().strip()
-            # mobile = "0413689413"
+            # mobile = input().strip()
+            mobile = "0413689413"
 
             if len(mobile) == 10 and mobile.isdigit():
                 
@@ -98,6 +146,7 @@ def check_customer():
                     logged_customer = customer
             
             else:
+                clear()
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
     
 ###############################################################################################################
@@ -105,26 +154,21 @@ def check_customer():
 
 def place_orders():
 
-    def get_menu():
-        menu_items = session.query(MenuItem).all()
-        for item in menu_items:
-            print(item)
-
     check_customer()
 
     clear()
 
+    if logged_customer == customer:
+        print(Back.LIGHTGREEN_EX + f"Welcome back {logged_customer.first_name}!" + "\n" + Style.RESET_ALL)
+    else:
+        print(Back.LIGHTYELLOW_EX + f"Welcome to Sheryl's Makan Place, {logged_customer.first_name}." + "\n" + Style.RESET_ALL)
+
+    header("MENU", "*", 31)
+    get_menu()
+    print("*" * 31)
+    print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.\nTo go back to the main menu, type 'back'.")
+
     while True:
-
-        if logged_customer == customer:
-            print(Back.LIGHTGREEN_EX + f"Welcome back {logged_customer.first_name}!" + "\n" + Style.RESET_ALL)
-        else:
-            print(Back.LIGHTYELLOW_EX + f"Welcome to Sheryl's Makan Place, {logged_customer.first_name}." + "\n" + Style.RESET_ALL)
-
-        header("MENU", "*", 31)
-        get_menu()
-        print("*" * 31)
-        print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.\nTo go back to the main menu, type 'back'.")
         
         choice = input().strip().lower()
         valid_food_items = {str(i) for i in range(1, 11)}
@@ -144,20 +188,19 @@ def place_orders():
                 else:
                     print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
-            last_order = session.query(Order).order_by(Order.id.desc()).first()
-
-            add_order_entry = OrderDetail(
-                order_id = last_order.id,
+            global current_order
+            current_order = session.query(Order).order_by(Order.id.desc()).first()
+            add_item = OrderDetail(
+                order_id = current_order.id,
                 menu_item_id = int(choice),
                 quantity = int(quantity)
             )
 
-            session.add(add_order_entry)
+            session.add(add_item)
             session.commit()
 
-
             print("\nItem added to order! Pls select an option below:")
-            print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tPlace more orders")
+            print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tAdd items")
             print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView/Modify order & Checkout")
             print("=" * 70)
 
@@ -166,11 +209,19 @@ def place_orders():
             while True:
                 if choice_after_order_added == "1":
                     clear()
+                    header("MENU", "*", 31)
+                    get_menu()
+                    print("*" * 31)
+                    print(f"\nPlease type in the numerical value of the food/drink item.\nOtherwise, type 'view' to view your order.")
                     break
                 elif choice_after_order_added == "2":
-                    pass
+                    clear()
+                    view_current_order()
+                    break
                 else:
                     print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+        else:
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
                 
 def view_past_orders():
 
