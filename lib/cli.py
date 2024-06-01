@@ -4,6 +4,7 @@ from datetime import datetime
 from colorama import Back, Fore, Style
 from tabulate import tabulate
 import os
+import sys
 
 logged_customer = None
 
@@ -34,6 +35,11 @@ def get_menu():
     menu_items = session.query(MenuItem).all()
     for item in menu_items:
         print(item)
+
+def remove_null_order():
+    
+    session.query(Order).filter(Order.order_details == None).delete()
+    session.commit()
 
 def view_current_order():
     current_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id).all()
@@ -73,6 +79,7 @@ def view_current_order():
             session.commit()
             clear()
             print("Order cancelled!")
+            start()
             break
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
@@ -112,14 +119,6 @@ def check_customer():
                     new_customer = Customer(first_name=first_name, last_name=last_name, mobile=mobile)
                     session.add(new_customer)
                     session.commit()
-                    
-                    add_order_id = Order(
-                        order_date_time = datetime.now(),
-                        customer_id = new_customer.id
-                    )
-
-                    session.add(add_order_id)
-                    session.commit()
 
                     loop = False
 
@@ -132,14 +131,6 @@ def check_customer():
 
                 else:
                     check_customer_runs_once = True
-
-                    add_order_id = Order(
-                        order_date_time = datetime.now(),
-                        customer_id = customer.id
-                    )
-
-                    session.add(add_order_id)
-                    session.commit()
 
                     loop = False
 
@@ -158,10 +149,18 @@ def place_orders():
 
     clear()
 
+    add_order_id = Order(
+        order_date_time = datetime.now(),
+        customer_id = logged_customer.id
+    )
+
+    session.add(add_order_id)
+    session.commit()
+
     if logged_customer == customer:
         print(Back.LIGHTGREEN_EX + f"Welcome back {logged_customer.first_name}!" + "\n" + Style.RESET_ALL)
     else:
-        print(Back.LIGHTYELLOW_EX + f"Welcome to Sheryl's Makan Place, {logged_customer.first_name}." + "\n" + Style.RESET_ALL)
+        print(Back.LIGHTCYAN_EX + f"Welcome to Sheryl's Makan Place, {logged_customer.first_name}." + "\n" + Style.RESET_ALL)
 
     header("MENU", "*", 31)
     get_menu()
@@ -174,6 +173,7 @@ def place_orders():
         valid_food_items = {str(i) for i in range(1, 11)}
 
         if choice == 'back':
+            remove_null_order()
             break
 
         elif choice in valid_food_items:
@@ -198,6 +198,17 @@ def place_orders():
 
             session.add(add_item)
             session.commit()
+            
+            same_item_in_same_order = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id, OrderDetail.menu_item_id == choice).all()
+    
+            if len(same_item_in_same_order) > 1:
+                first_entry = same_item_in_same_order[0]
+                second_entry = same_item_in_same_order[1]
+                
+                first_entry.quantity += second_entry.quantity
+
+                session.delete(second_entry)
+                session.commit()
 
             print("\nItem added to order! Pls select an option below:")
             print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tAdd items")
@@ -237,11 +248,6 @@ def view_past_orders():
     else:
         print(f"Oops, no orders found.\n")
 
-def remove_null_order():
-    
-    session.query(Order).filter(Order.order_details == None).delete()
-    session.commit()
-
 ###############################################################################################################
 
 def start():
@@ -264,12 +270,12 @@ def start():
             elif choice == "0": # Exit this program
                 clear()
                 start_loop = False
-                remove_null_order()
                 break
             else:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
     
     print(Back.BLUE + "Thank you for choosing Sheryl's Makan Place. See you soon!" + Style.RESET_ALL)
+    sys.exit()
 
 if __name__ == "__main__":
     start()

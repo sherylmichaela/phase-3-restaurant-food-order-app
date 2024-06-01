@@ -109,12 +109,12 @@ if __name__ == "__main__":
 
     total_price = 0
 
-    for order in customer_order_breakdown:
-        item_total = order.menu_item.price * order.quantity
-        total_price += item_total
+    # for order in customer_order_breakdown:
+    #     item_total = order.menu_item.price * order.quantity
+    #     total_price += item_total
 
-        print(f"{order.menu_item.item_name:<20} \t${str(order.menu_item.price):<7} \t{order.quantity} \t${str(order.menu_item.price * order.quantity)}")
-    print(f"Total: {str(total_price)}")
+    #     print(f"{order.menu_item.item_name:<20} \t${str(order.menu_item.price):<7} \t{order.quantity} \t${str(order.menu_item.price * order.quantity)}")
+    # print(f"Total: {str(total_price)}")
 
     ####################################################################
 
@@ -131,6 +131,22 @@ if __name__ == "__main__":
     #     print(order)
    
     ####################################################################
+    
+    # TO COMBINE ROWS IN ORDER DETAIL WHICH HAVE THE SAME ORDER ID AND SAME MENU ITEM ORDERED
+    same_item_in_same_order = session.query(OrderDetail).filter(OrderDetail.order_id ==  1, OrderDetail.menu_item_id == 1).all()
+    
+    if len(same_item_in_same_order) > 1:
+        first_entry = same_item_in_same_order[0]
+        second_entry = same_item_in_same_order[1]
+        
+        first_entry.quantity += second_entry.quantity
+
+        # session.delete(second_entry)
+        # session.commit()
+    
+    ####################################################################
+
+    
 
     valid_food_items = {str(i) for i in range(1, 11)}
     # print(valid_food_items)
