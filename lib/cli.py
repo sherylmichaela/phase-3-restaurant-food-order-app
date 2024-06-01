@@ -67,10 +67,7 @@ def view_current_order():
 
         if choice == "1":
             clear()
-            header("MENU", "*", 31)
-            get_menu()
-            print("*" * 31)
-            print(f"\nPlease type in the numerical value of the food/drink item.\nOtherwise, type 'view' to view your order.")
+            place_subsequent_order()
             break
         elif choice == "2":
             last_order = session.query(Order).order_by(Order.id.desc()).first()
@@ -83,13 +80,14 @@ def view_current_order():
             break
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
-
+    
 ###############################################################################################################
-
-check_customer_runs_once = False
+# MAIN CODES HERE
 
 def check_customer():
     global check_customer_runs_once
+    check_customer_runs_once = False
+
     if not check_customer_runs_once:
 
         loop = True
@@ -97,8 +95,8 @@ def check_customer():
         while loop:
 
             print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-            # mobile = input().strip()
-            mobile = "0413689413"
+            mobile = input().strip()
+            # mobile = "0413689413"
 
             if len(mobile) == 10 and mobile.isdigit():
                 
@@ -139,47 +137,28 @@ def check_customer():
             else:
                 clear()
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
-    
-###############################################################################################################
-# MAIN CODES HERE
 
-def place_orders():
-
-    check_customer()
-
-    clear()
-
-    add_order_id = Order(
-        order_date_time = datetime.now(),
-        customer_id = logged_customer.id
-    )
-
-    session.add(add_order_id)
-    session.commit()
-
-    if logged_customer == customer:
-        print(Back.LIGHTGREEN_EX + f"Welcome back {logged_customer.first_name}!" + "\n" + Style.RESET_ALL)
-    else:
-        print(Back.LIGHTCYAN_EX + f"Welcome to Sheryl's Makan Place, {logged_customer.first_name}." + "\n" + Style.RESET_ALL)
+def place_subsequent_order():
 
     header("MENU", "*", 31)
     get_menu()
     print("*" * 31)
-    print("\nWhat would you like to order today? Please type in the numerical value of the food/drink item.\nTo go back to the main menu, type 'back'.")
+    print("\nTo add item, please type in the numerical value of the food/drink item.\nOtherwise, type 'view' to view your current order.")
 
     while True:
         
         choice = input().strip().lower()
         valid_food_items = {str(i) for i in range(1, 11)}
 
-        if choice == 'back':
-            remove_null_order()
+        if choice == 'view':
+            clear()
+            view_current_order()
             break
 
         elif choice in valid_food_items:
 
             while True:
-                print("Quantity? (Pls input only numbers.)")
+                print("\nQuantity? (Pls input only numbers.)")
 
                 quantity = input()
 
@@ -188,8 +167,6 @@ def place_orders():
                 else:
                     print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
-            global current_order
-            current_order = session.query(Order).order_by(Order.id.desc()).first()
             add_item = OrderDetail(
                 order_id = current_order.id,
                 menu_item_id = int(choice),
@@ -220,10 +197,85 @@ def place_orders():
             while True:
                 if choice_after_order_added == "1":
                     clear()
-                    header("MENU", "*", 31)
-                    get_menu()
-                    print("*" * 31)
-                    print(f"\nPlease type in the numerical value of the food/drink item.\nOtherwise, type 'view' to view your order.")
+                    place_subsequent_order()
+                    break
+                elif choice_after_order_added == "2":
+                    clear()
+                    view_current_order()
+                    break
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+        else:
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+def place_initial_order():
+
+    check_customer()
+
+    clear()
+
+    add_order_id = Order(
+        order_date_time = datetime.now(),
+        customer_id = logged_customer.id
+    )
+
+    session.add(add_order_id)
+    session.commit()
+
+    if logged_customer == customer:
+        print(Back.LIGHTGREEN_EX + f"Welcome back {logged_customer.first_name}!" + "\n" + Style.RESET_ALL)
+    else:
+        print(Back.LIGHTCYAN_EX + f"Welcome to Sheryl's Makan Place, {logged_customer.first_name}." + "\n" + Style.RESET_ALL)
+
+    header("MENU", "*", 31)
+    get_menu()
+    print("*" * 31)
+    print("\nTo place an order, please type in the numerical value of the food/drink item.\nTo go back to the main menu, type 'back'.")
+
+    while True:
+        
+        choice = input().strip().lower()
+        valid_food_items = {str(i) for i in range(1, 11)}
+
+        if choice == 'back':
+            remove_null_order()
+            break
+
+        elif choice in valid_food_items:
+
+            while True:
+                print("\nQuantity? (Pls input only numbers.)")
+
+                quantity = input()
+
+                if quantity.isdigit() and 1 <= int(quantity) <= 99:
+                    break
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+            global current_order
+            current_order = session.query(Order).order_by(Order.id.desc()).first()
+            add_item = OrderDetail(
+                order_id = current_order.id,
+                menu_item_id = int(choice),
+                quantity = int(quantity)
+            )
+
+            session.add(add_item)
+            session.commit()
+
+            print("\nItem added to order! Pls select an option below:")
+            print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tAdd items")
+            print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView/Modify order & Checkout")
+            print("=" * 70)
+
+            while True:
+
+                choice_after_order_added = input()
+
+                if choice_after_order_added == "1":
+                    clear()
+                    place_subsequent_order()
                     break
                 elif choice_after_order_added == "2":
                     clear()
@@ -261,7 +313,7 @@ def start():
 
             if choice == "1": # Place a new order
                 clear()
-                place_orders()
+                place_initial_order()
                 break
             elif choice == "2": # View past orders
                 clear()
