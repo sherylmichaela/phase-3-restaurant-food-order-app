@@ -288,17 +288,72 @@ def place_initial_order():
                 
 def view_past_orders():
 
-    print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-    mobile = input()
-    # mobile = "0413689413"
+    if logged_customer:
+        pass
+    elif logged_customer == None:
+        
+        while True:
+            print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+            mobile = input().strip()
+            # mobile = "0413689413"
 
-    customer_found = session.query(Customer).filter(Customer.mobile == mobile).first()
-    order_found = session.query(Order).filter()
+            if len(mobile) == 10 and mobile.isdigit():
+                break
+            else:
+                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+            
+        customer_found = session.query(Customer).filter(Customer.mobile == mobile).first()
 
-    if customer_found:
-        print(f"\n{customer_found}")
-    else:
-        print(f"Oops, no orders found.\n")
+        if customer_found:
+        
+            clear()
+            print(f"\nHi {customer_found.first_name}, these are your past orders:")
+
+            get_past_orders = session.query(Order).filter(Order.customer_id == customer_found.id).all()
+            past_orders_dict = {}
+            
+            for order in get_past_orders:
+                get_past_order_details = session.query(OrderDetail).filter(OrderDetail.order_id == order.id).all()
+
+                if order.id not in past_orders_dict:
+                    past_orders_dict[order.id] = {
+                        "order_date_time": order.order_date_time,
+                        "details": []
+                    }
+
+                for item in get_past_order_details:
+                    past_orders_dict[order.id]["details"].append(f"{item.quantity} * {item.menu_item.item_name}")
+
+
+            past_orders_table = []
+
+
+            for order_id, order_info in past_orders_dict.items():
+                details = "\n".join(order_info["details"])
+                past_orders_table.append([order_id, order_info["order_date_time"], details])
+                
+            headers = ["Order ID", "Order Date & Time", "Details"]
+            print(tabulate(past_orders_table, headers, tablefmt="grid"))
+
+
+            print("\nTo place a new order, type 'new'.")
+            print("To go back to the main menu, type 'back'.")
+
+            while True:
+                choice = input().strip().lower()
+                
+                if choice == "new":
+                    pass
+                    break
+                elif choice == "back":
+                    pass
+                    break
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+        else:
+            print("No customer and orders found.")
+            main_menu()      
 
 ###############################################################################################################
 
@@ -317,7 +372,7 @@ def start():
                 break
             elif choice == "2": # View past orders
                 clear()
-                # view_past_orders()
+                view_past_orders()
                 break
             elif choice == "0": # Exit this program
                 clear()

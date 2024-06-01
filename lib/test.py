@@ -91,7 +91,7 @@ if __name__ == "__main__":
     # print(order.customer.first_name)
     # print(order.customer.mobile)
     # print(order.menu_items)
-    # print(order.order_details)
+    print(order.order_details)
 
     ####################################################################
     
