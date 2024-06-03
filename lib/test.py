@@ -91,15 +91,15 @@ if __name__ == "__main__":
     # print(order.customer.first_name)
     # print(order.customer.mobile)
     # print(order.menu_items)
-    print(order.order_details)
+    # print(order.order_details)
 
     ####################################################################
     
     # TO RETRIEVE ALL ORDERS MADE BY A CUSTOMER
 
     customer = session.query(Customer).filter(Customer.id == 1).first()
-    for order in customer.orders:
-        print(order)
+    # for order in customer.orders:
+    #     print(order)
 
     ####################################################################
 
@@ -146,7 +146,11 @@ if __name__ == "__main__":
     
     ####################################################################
 
-    
+    customer_order_breakdown = session.query(OrderDetail).filter(OrderDetail.order_id == 1).all()
+    for item in customer_order_breakdown:
+        print(item.menu_item.item_name)
+
+    ####################################################################
 
     valid_food_items = {str(i) for i in range(1, 11)}
     # print(valid_food_items)
