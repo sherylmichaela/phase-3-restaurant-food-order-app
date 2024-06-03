@@ -46,21 +46,63 @@ def view_current_order():
 
     total_price = 0
     table = []
+    table_item_id = 1
+    custom_item_id_to_order_detail = {}
 
     for item in current_order_breakdown:
         item_total = item.menu_item.price * item.quantity
         total_price += item_total
-        table.append([item.menu_item.item_name, f"${item.menu_item.price}", item.quantity, f"${item_total}"])
+        table.append([table_item_id, item.menu_item.item_name, f"${item.menu_item.price}", item.quantity, f"${item_total}"])
+        custom_item_id_to_order_detail[table_item_id] = item.menu_item.item_name
+        table_item_id += 1
 
     print("Order Summary")
-    headers = ["Item Ordered", "Unit Price", "Quantity", "Item Total"]
+    headers = ["ID", "Item Ordered", "Unit Price", "Quantity", "Item Total"]
     table.append(["", "", "Total", f"${total_price}"])
     print(tabulate(table, headers, tablefmt="grid"))
 
     print("\nPls select an option below:")
-    print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tAdd items")
-    print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tCancel order")
+    print(Back.LIGHTCYAN_EX + " 1 " + Style.RESET_ALL + "\tAdd item")
+    print(Back.LIGHTGREEN_EX + " 2 " + Style.RESET_ALL + "\tModify item quantity")
+    print(Back.LIGHTBLUE_EX + " 3 " + Style.RESET_ALL + "\tRemove item")
+    print(Back.LIGHTRED_EX + " 4 " + Style.RESET_ALL + "\tCancel order")
+    print(Back.LIGHTMAGENTA_EX + " 5 " + Style.RESET_ALL + "\tMake payment")
     print("=" * 70)
+
+    def modify_item():
+
+        loop = True
+
+        while loop:
+
+            print("Which item would you like to modify?")
+            item_id = input()
+
+            for key in custom_item_id_to_order_detail:
+
+                if item_id in str(key):
+                    get_item = session.query(OrderDetail).filter(OrderDetail.menu_item_id == item.menu_item_id).first()
+                    
+                    inner_loop = True
+
+                    while inner_loop:
+                        print(f"Input new quantity for {get_item.menu_item.item_name}:")
+                        new_quantity = input()
+
+                        if new_quantity.isdigit() and 1 <= int(new_quantity) <= 99:
+                            get_item.quantity = int(new_quantity)
+                            session.commit()
+                            inner_loop = False
+                            loop = False
+                            clear()
+                            view_current_order()
+                            break
+                        else:
+                            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
 
     while True:
         choice = input()
@@ -70,14 +112,20 @@ def view_current_order():
             place_subsequent_order()
             break
         elif choice == "2":
+            modify_item()
+            break
+        elif choice == "3":
+            pass
+        elif choice == "4":
             last_order = session.query(Order).order_by(Order.id.desc()).first()
             session.query(Order).filter(Order.id == last_order.id).delete()
             session.query(OrderDetail).filter(OrderDetail.order_id == last_order.id).delete()
             session.commit()
             clear()
-            print("Order cancelled!")
             start()
             break
+        elif choice == "5":
+            pass
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
     
