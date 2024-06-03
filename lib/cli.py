@@ -76,12 +76,13 @@ def view_current_order():
         while loop:
 
             print("Which item would you like to modify?")
-            item_id = input()
+            item_id = input().strip()
 
             for key in custom_item_id_to_order_detail:
 
                 if item_id in str(key):
-                    get_item = session.query(OrderDetail).filter(OrderDetail.menu_item_id == item.menu_item_id).first()
+
+                    get_item = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id, OrderDetail.menu_item_id == item.menu_item_id).first()
                     
                     inner_loop = True
 
