@@ -97,9 +97,9 @@ if __name__ == "__main__":
     
     # TO RETRIEVE ALL ORDERS MADE BY A CUSTOMER
 
-    customer = session.query(Customer).filter(Customer.id == 2).first()
-    # for order in customer.orders:
-    #     print(order)
+    customer = session.query(Customer).filter(Customer.id == 1).first()
+    for order in customer.orders:
+        print(order)
 
     ####################################################################
 

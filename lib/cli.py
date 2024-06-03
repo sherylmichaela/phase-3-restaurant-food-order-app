@@ -94,9 +94,12 @@ def check_customer():
 
         while loop:
 
-            print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-            mobile = input().strip()
-            # mobile = "0413689413"
+            if customer_found:
+                mobile = customer_found.mobile
+            else:
+                print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+                mobile = input().strip()
+                # mobile = "0413689413"
 
             if len(mobile) == 10 and mobile.isdigit():
                 
@@ -287,25 +290,18 @@ def place_initial_order():
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
                 
 def view_past_orders():
+    
+    loop = True
 
-    if logged_customer:
-        pass
-    elif logged_customer == None:
-        
-        while True:
-            print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
-            mobile = input().strip()
-            # mobile = "0413689413"
+    while loop:
+        print("\nPlease enter your 10-digit mobile number. (i.e. 04xxxxxxxx)")
+        mobile = input().strip()
+        # mobile = "0413689413"
 
-            if len(mobile) == 10 and mobile.isdigit():
-                break
-            else:
-                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
-            
+        global customer_found
         customer_found = session.query(Customer).filter(Customer.mobile == mobile).first()
 
-        if customer_found:
-        
+        if len(mobile) == 10 and mobile.isdigit() and customer_found:
             clear()
             print(f"\nHi {customer_found.first_name}, these are your past orders:")
 
@@ -335,25 +331,29 @@ def view_past_orders():
             headers = ["Order ID", "Order Date & Time", "Details"]
             print(tabulate(past_orders_table, headers, tablefmt="grid"))
 
+            loop = False
 
             print("\nTo place a new order, type 'new'.")
             print("To go back to the main menu, type 'back'.")
-
+    
             while True:
                 choice = input().strip().lower()
                 
                 if choice == "new":
-                    pass
+                    clear()
+                    place_initial_order()
                     break
                 elif choice == "back":
-                    pass
+                    clear()
+                    main_menu()
                     break
                 else:
                     print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
+        elif len(mobile) == 10 and mobile.isdigit() and not customer_found:
+            print("Oops, looks like you haven't placed any orders.")
         else:
-            print("No customer and orders found.")
-            main_menu()      
+            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
 ###############################################################################################################
 
