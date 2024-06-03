@@ -135,7 +135,6 @@ def check_customer():
                     logged_customer = customer
             
             else:
-                clear()
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
 def place_subsequent_order():
@@ -334,21 +333,27 @@ def view_past_orders():
                     if order.id not in past_orders_dict:
                         past_orders_dict[order.id] = {
                             "order_date_time": order.order_date_time,
-                            "details": []
+                            "details": [],
+                            "price": []
                         }
 
-                    for item in get_past_order_details:
-                        past_orders_dict[order.id]["details"].append(f"{item.quantity} * {item.menu_item.item_name}")
+                    total_price = 0
 
+                    for item in get_past_order_details:
+                        individual_item_total_price = item.quantity * item.menu_item.price
+                        total_price += individual_item_total_price
+                        past_orders_dict[order.id]["details"].append(f"{item.quantity} * {item.menu_item.item_name}")
+                        past_orders_dict[order.id]["price"].append(f"{total_price}")
 
                 past_orders_table = []
 
 
                 for order_id, order_info in past_orders_dict.items():
                     details = "\n".join(order_info["details"])
-                    past_orders_table.append([order_id, order_info["order_date_time"], details])
+                    last_element_in_total_price = "{:.2f}".format(float(order_info["price"][-1]))
+                    past_orders_table.append([order_id, order_info["order_date_time"], details, f"${last_element_in_total_price}"])
                     
-                headers = ["Order ID", "Order Date & Time", "Details"]
+                headers = ["Order ID", "Order Date & Time", "Details", "Total"]
                 print(tabulate(past_orders_table, headers, tablefmt="grid"))
 
                 loop = False
