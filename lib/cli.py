@@ -70,7 +70,7 @@ def view_current_order():
     print(Back.LIGHTGREEN_EX + " 2 " + Style.RESET_ALL + "\tModify item quantity")
     print(Back.LIGHTBLUE_EX + " 3 " + Style.RESET_ALL + "\tRemove item")
     print(Back.LIGHTRED_EX + " 4 " + Style.RESET_ALL + "\tCancel order")
-    print(Back.LIGHTMAGENTA_EX + " 5 " + Style.RESET_ALL + "\tMake payment")
+    print(Back.LIGHTMAGENTA_EX + " 5 " + Style.RESET_ALL + "\tSubmit order")
     print("=" * 70)
 
     def modify_item():
@@ -161,6 +161,50 @@ def view_current_order():
             except ValueError:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
+    def confirm_order():
+        
+        loop = True
+
+        while loop:
+
+            print("Would you like to proceed with your order? (y/n)")
+            choice = input().strip().lower()
+
+            if choice == "y" or choice == "yes":
+
+                inner_loop = True
+
+                while inner_loop:
+                    clear()
+                    print(f"Yay {logged_customer.first_name}, your order has been submitted!")
+                    print("To place a new order, type 'new'.")
+                    print("To go back to the main menu, type 'main'.")
+                    choice = input().strip().lower()
+
+                    if choice == 'new':
+                        clear()
+                        inner_loop = False
+                        loop = False
+                        place_initial_order()
+                        break
+                    elif choice == 'main':
+                        inner_loop = False
+                        loop = False
+                        clear()
+                        start()
+                        break
+                    else:
+                        print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+            elif choice == "n" or choice == "no":
+                loop = False
+                clear()
+                view_current_order()
+                break
+            else:
+                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+
     while True:
         choice = input()
 
@@ -175,20 +219,33 @@ def view_current_order():
             remove_item()
             break
         elif choice == "4":
-            last_order = session.query(Order).order_by(Order.id.desc()).first()
-            session.query(Order).filter(Order.id == last_order.id).delete()
-            session.query(OrderDetail).filter(OrderDetail.order_id == last_order.id).delete()
-            session.commit()
-            clear()
-            start()
+
+            while True:
+                
+                print("You're about to cancel your order. Would you like to proceed? (y/n)")
+                choice = input().strip().lower()
+
+                if choice == 'y' or choice == 'yes':
+                    last_order = session.query(Order).order_by(Order.id.desc()).first()
+                    session.query(Order).filter(Order.id == last_order.id).delete()
+                    session.query(OrderDetail).filter(OrderDetail.order_id == last_order.id).delete()
+                    session.commit()
+                    clear()
+                    start()
+                    break
+                elif choice == 'n' or choice == 'no':
+                    clear()
+                    view_current_order()
+                    break
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
             break
         elif choice == "5":
-            pass
+            confirm_order()
+            break
         else:
             print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
-    
-###############################################################################################################
-# MAIN CODES HERE
 
 def check_customer():
     global check_customer_runs_once
