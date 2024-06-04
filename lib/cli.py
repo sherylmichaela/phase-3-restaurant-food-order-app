@@ -80,30 +80,83 @@ def view_current_order():
         while loop:
 
             print("Which item would you like to modify?")
-            item_id = int(input())
+
+            try:
+                item_id = int(input())
             
-            if item_id in custom_item_id_to_item_name.keys():
+                if item_id in custom_item_id_to_item_name.keys():
 
-                get_item = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id, OrderDetail.menu_item_id == custom_item_id_to_item_name[item_id]["menu_item_id"]).first()
+                    get_item = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id, OrderDetail.menu_item_id == custom_item_id_to_item_name[item_id]["menu_item_id"]).first()
 
-                inner_loop = True
+                    inner_loop = True
 
-                while inner_loop:
-                    print(f"Input new quantity for {get_item.menu_item.item_name}:")
-                    new_quantity = input()
+                    while inner_loop:
+                        print(f"Input new quantity for {get_item.menu_item.item_name}:")
 
-                    if new_quantity.isdigit() and 1 <= int(new_quantity) <= 99:
-                        get_item.quantity = int(new_quantity)
-                        session.commit()
-                        inner_loop = False
-                        loop = False
-                        clear()
-                        view_current_order()
-                        break
-                    else:
-                        print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                        try:
+                            new_quantity = input()
 
-            else:
+                            if 1 <= int(new_quantity) <= 99:
+                                get_item.quantity = int(new_quantity)
+                                session.commit()
+                                inner_loop = False
+                                loop = False
+                                clear()
+                                view_current_order()
+                                break
+                            else:
+                                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                        
+                        except ValueError:
+                            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+            
+            except ValueError:
+                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+    def remove_item():
+
+        loop = True
+
+        while loop:
+
+            print("Which item would you like to modify?")
+
+            try:
+                item_id = int(input())
+            
+                if item_id in custom_item_id_to_item_name.keys():
+
+                    get_item = session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id, OrderDetail.menu_item_id == custom_item_id_to_item_name[item_id]["menu_item_id"]).first()
+
+                    inner_loop = True
+
+                    while inner_loop:
+                        print(f"Input new quantity for {get_item.menu_item.item_name}:")
+
+                        try:
+                            new_quantity = input()
+
+                            if 1 <= int(new_quantity) <= 99:
+                                get_item.quantity = int(new_quantity)
+                                session.commit()
+                                inner_loop = False
+                                loop = False
+                                clear()
+                                view_current_order()
+                                break
+                            else:
+                                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                        
+                        except ValueError:
+                            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+
+                else:
+                    print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+            
+            except ValueError:
                 print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
 
     while True:
@@ -117,7 +170,8 @@ def view_current_order():
             modify_item()
             break
         elif choice == "3":
-            pass
+            # remove_item()
+            break
         elif choice == "4":
             last_order = session.query(Order).order_by(Order.id.desc()).first()
             session.query(Order).filter(Order.id == last_order.id).delete()
@@ -241,9 +295,9 @@ def place_subsequent_order():
             print(Back.LIGHTBLUE_EX + " 2 " + Style.RESET_ALL + "\tView/Modify order & Checkout")
             print("=" * 70)
 
-            choice_after_order_added = input()
-
             while True:
+                choice_after_order_added = input()
+
                 if choice_after_order_added == "1":
                     clear()
                     place_subsequent_order()
