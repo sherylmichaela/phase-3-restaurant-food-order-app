@@ -121,8 +121,8 @@ def view_current_order():
         loop = True
 
         while loop:
-
-            print("Which item would you like to modify?")
+            
+            print("Which item would you like to remove?")
 
             try:
                 item_id = int(input())
@@ -134,25 +134,27 @@ def view_current_order():
                     inner_loop = True
 
                     while inner_loop:
-                        print(f"Input new quantity for {get_item.menu_item.item_name}:")
-
-                        try:
-                            new_quantity = input()
-
-                            if 1 <= int(new_quantity) <= 99:
-                                get_item.quantity = int(new_quantity)
-                                session.commit()
-                                inner_loop = False
-                                loop = False
-                                clear()
-                                view_current_order()
-                                break
-                            else:
-                                print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                        print(f"You're about to remove {get_item.menu_item.item_name} from your order. Are you sure? (y/n)")
                         
-                        except ValueError:
-                            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                        choice = input().strip().lower()
 
+                        if choice == "y" or choice == "yes":
+                            session.query(OrderDetail).filter(OrderDetail.order_id == current_order.id, OrderDetail.menu_item_id == custom_item_id_to_item_name[item_id]["menu_item_id"]).delete()
+                            session.commit()
+                            inner_loop = False
+                            loop = False
+                            clear()
+                            view_current_order()
+                            break
+                        elif choice == "n" or choice == "no":
+                            inner_loop = False
+                            loop = False
+                            clear()
+                            view_current_order()
+                            break
+                        else:
+                            print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
+                        
                 else:
                     print(Fore.RED + "Invalid input!" + Style.RESET_ALL)
             
@@ -170,7 +172,7 @@ def view_current_order():
             modify_item()
             break
         elif choice == "3":
-            # remove_item()
+            remove_item()
             break
         elif choice == "4":
             last_order = session.query(Order).order_by(Order.id.desc()).first()
